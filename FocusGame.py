@@ -1,5 +1,5 @@
 # Jacob Morrow
-# Date: Dec 2nd, 2020
+# Date: Dec 1st, 2020
 # Description: Program to play a two player game of das Spiel des Jahres 1981, Focus, also known as Domination.
 
 
@@ -20,10 +20,14 @@ class FocusGame:
         """2 player helper method
         :param name: player's name
         :return player"""
-        if name == self._player1.get_name():
+        if name.lower() == self._player1.get_name().lower():
             return self._player1
-        else:
+
+        if name.lower() == self._player2.get_name().lower():
             return self._player2
+
+        # if name is incorrect
+        return False
 
     def move_piece(self, name, coord0, coord1, amount):
         """move helper method
@@ -53,14 +57,15 @@ class FocusGame:
         """move reserve helper method
         :param: name: player’s name
         :param: coord: (x,y) of tile to move to"""
-        pass
+        player = self.get_player_from_name(name)
+        return self._board.reserved_move(player, coord)
 
 
 class Player:
     """Class representing a Player"""
 
     def __init__(self, name, piece, captured=0, reserve=0):
-        """Initializes player from name"""
+        """Initializes player's name, piece, captured amount, reserve amount'"""
         self._name = name
         self._piece = piece
         self._captured = captured
@@ -100,28 +105,16 @@ class Board:
         :param: turn: current player to go"""
         self._players = p1, p2
         self._matrix = self.build_board(p1, p2)
-        self._turn = turn
+        self.last_turn = turn
 
     @staticmethod
     def build_board(p1, p2):
         """Initializes 6x6 matrix of player objects
         :param: p1: player1 object
         :param: p2: player2 object"""
-        # even_row = [list(0), list(0), list(1), list(1), list(0), list(0)]
-        # odd_row = [list(1), list(1), list(0), list(0), list(1), list(1)]
         matrix = [[[p1], [p1], [p2], [p2], [p1], [p1]] if row % 2 == 0 else [[p2], [p2], [p1], [p1], [p2], [p2]] for row
                   in range(6)]
-        # matrix = [even_row if row % 2 == 0 else odd_row for row in range(6)]
         return matrix
-
-    def get_other_player(self, player):
-        """Returns opposing player object
-        :param: player: player object
-        :return: Other player object in _players"""
-        if player == self._players[0]:
-            return self._players[1]
-        else:
-            return self._players[0]
 
     def show_piece(self, coord):
         """Returns stack on coord on matrix
@@ -142,30 +135,43 @@ class Board:
         x0, y0 = coord0[0], coord0[1]
         x1, y1 = coord1[0], coord1[1]
         tile = self._matrix[x0][y0]
+        # if move is only horizontal or vertical
+        if x0 != x1 and y0 != y1:
+            return False
+
+        # if move is beyond amount
+        if abs(x1 - x0) != amount and abs(y1 - y0) != amount:
+            return False
 
         # if amount of stack moved is too much or not enough
         if len(tile) - amount < 0 or amount <= 0:
             return False
 
-        # if not player's turn and first turn wasn't taken
-        if self._turn == player and self._turn is not None:
+        # if not player's turn
+        if self.last_turn == player:
             return False
 
         # if piece at top of stack isn't player's piece
-        if tile[len(tile) - 1].get_piece() != player.get_piece():
+        if tile[len(tile) - 1] != player:
             return False
 
-        # if out of bounds of board
+        # if both coord out of bounds of board
         if 0 > x0 > 5 or 0 > y0 > 5 or 0 > x1 > 5 or 0 > y1 > 5:
             return False
 
+        # move stack from coord0 to coord1
         temp = tile[len(tile) - amount:]
         self._matrix[x0][y0] = tile[:len(tile) - amount]
         self._matrix[x1][y1] += temp
 
         if len(self._matrix[x1][y1]) > 5:
             self.check_stack(player, x1, y1)
-        self._turn = player
+
+        # if game won
+        if player.get_captured() == 6:
+            return player.get_name() + ' Wins'
+
+        self.last_turn = player
         return 'successfully moved'
 
     def check_stack(self, player, x, y):
@@ -175,33 +181,84 @@ class Board:
         :param: x: x coord of stack to check"""
         check = self._matrix[x][y]
         self._matrix[x][y] = check[len(check) - 5:]
+        print(check[:len(check) - 5])
         for piece in check[:len(check) - 5]:
-            if piece.get_piece() == player.get_piece():
+            if piece == player:
                 player.add_reserve(1)
             else:
                 player.add_captured(1)
 
     def reserved_move(self, player, coord):
-        pass
+        """moves piece from player's reserve to coord
+        :param: player: player object
+        :param: coord: (x,y) of tile on board"""
+        x, y = coord[0], coord[1]
+
+        # if player reserve empty
+        if player.get_reserve() < 1:
+            return False
+
+        # if not player's turn
+        if self.last_turn == player:
+            return False
+
+        # if out of bounds of board
+        if 0 > x > 5 or 0 > y > 5:
+            return False
+
+        self._matrix[x][y].append(player)
+
+        if len(self._matrix[x][y]) > 5:
+            self.check_stack(player, x, y)
+
+        # if game won
+        if player.get_captured() == 6:
+            return player.get_name() + ' Wins'
+
+        self.last_turn = player
+        return 'successfully moved'
 
 
-game = FocusGame(('joe', 'r'), ('bob', 'g'))
-print(game.show_captured('joe'))
-print(game.show_captured('bob'))
-print(game.move_piece('bob', (5, 0), (0, 0), 1))
-print(game.move_piece('joe', (0, 1), (0, 0), 1))
-print(game.move_piece('bob', (0, 2), (0, 3), 1))
-print(game.move_piece('joe', (0, 0), (0, 3), 3))
-print(game.show_captured('joe'))
-print(game.show_reserve('joe'))
+game = FocusGame(('jo', 'J'), ('ak', 'A'))
+print(game.show_captured('jo'), game.show_reserve('jo'))
+print(game.show_captured('ak'), game.show_reserve('ak'))
+print(game.move_piece('jo', (0, 1), (0, 2), 1))
+print(game.move_piece('ak', (0, 3), (0, 2), 1))
+print(game.move_piece('jo', (1, 2), (0, 2), 1))
+print(game.move_piece('ak', (2, 2), (1, 2), 1))
+print(game.move_piece('jo', (1, 3), (1, 2), 1))
+print(game.move_piece('ak', (1, 1), (1, 2), 1))
+print(game.move_piece('jo', (0, 0), (0, 1), 1))
+print(game.move_piece('ak', (1, 2), (0, 2), 1))
+print(game.move_piece('jo', (1, 2), (0, 2), 1))
+print(game.move_piece('ak', (1, 2), (0, 2), 1))
+print(game.move_piece('jo', (0, 1), (0, 2), 1))
+print(game.move_piece('ak', (1, 4), (0, 4), 1))
+print(game.move_piece('jo', (0, 5), (0, 4), 1))
+print(game.move_piece('ak', (2, 3), (3, 3), 1))
+print(game.move_piece('jo', (0, 4), (0, 2), 2))
+print(game.move_piece('ak', (3, 3), (3, 2), 1))
+print(game.reserved_move('jo', (0, 2)))
+print(game.move_piece('ak', (3, 2), (1, 2), 2))
+print(game.reserved_move('jo', (0, 2)))
+print(game.move_piece('ak', (5, 1), (5, 0), 1))
+print(game.move_piece('jo', (4, 0), (5, 0), 1))
+print(game.move_piece('ak', (1, 2), (0, 2), 1))
+print(game.reserved_move('jo', (0, 2)))
+print(game.move_piece('ak', (3, 0), (2, 0), 1))
+print(game.reserved_move('jo', (1, 0)))
+print(game.move_piece('ak', (3, 1), (2, 1), 1))
+print(game.reserved_move('jo', (1, 0)))
+print(game.move_piece('ak', (2, 0), (1, 0), 1))
+print(game.reserved_move('jo', (2, 1)))
+print(game.move_piece('ak', (1, 0), (5, 0), 4))
+print(game.reserved_move('jo', (5, 0)))
+print(game.reserved_move('ak', (0, 2)))
+print(game.reserved_move('jo', (5, 0)))
+print(game.show_captured('jo'), game.show_reserve('jo'))
+print(game.show_captured('ak'), game.show_reserve('ak'))
+
 for i in range(6):
     for k in range(6):
-        print(game.show_piece((i, k)), end="    ")
+        print(game.show_piece((i, k)), (i, k), end="    ")
     print()
-
-sr = 'abcdefg'
-print(sr)
-print(sr[:len(sr) - 1])
-print(sr[len(sr) - 1:])
-print(sr[:len(sr) - 5])
-print(sr[len(sr) - 5:])
