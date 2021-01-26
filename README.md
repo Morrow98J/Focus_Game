@@ -25,7 +25,7 @@ The first player who captures six pieces of the other player wins the game.
 This [YouTube link](https://www.youtube.com/watch?v=DVRVQM9lo9E) explains how to play the game
 
 
-Here's a very simple example of how `FocusGame` class could be used:
+Here's a very simple example of how `FocusGame` could be used:
 ```
 game = FocusGame(('PlayerA', 'R'), ('PlayerB','G'))
 game.move_piece('PlayerA',(0,0), (0,1), 1)  #Returns message "successfully moved"
