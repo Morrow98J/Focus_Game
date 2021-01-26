@@ -1,4 +1,4 @@
-# portfolio-project
+# Spring_Portfolio_Project
 
 Todo: implement GUI with Pygame, fix edge cases
 
