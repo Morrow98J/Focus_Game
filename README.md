@@ -1,10 +1,7 @@
 # portfolio-project
 
-Write a class named FocusGame for playing an abstract board game called Focus/Domination. You can see the rules [here](https://en.wikipedia.org/wiki/Focus_(board_game)).
+You can see the rules [here](https://en.wikipedia.org/wiki/Focus_(board_game)).
 
-Write your code for two-player version of the game.
-
-The board looks like a checkerboard with three squares in each corner removed, hence forming 6X6 board with 1X4 extenstion on each side (You can find the picture of the board [here](https://en.wikipedia.org/wiki/Focus_(board_game))). In a two player game, the Green and Red pieces are placed, as shown in the figure in the [link](https://en.wikipedia.org/wiki/File:Focus_01.svg). 
 
 Any player can start the game. 
 #### Playing the game:
@@ -23,30 +20,8 @@ The first player who captures six pieces of the other player wins the game.
 
 This [YouTube link](https://www.youtube.com/watch?v=DVRVQM9lo9E) explains how to play the game
 
-Tip: Probably the easiest way of representing the board is to use a list of lists.
-You're not required to print the board.
 
-Your `FocusGame` class must include the following methods:
-- An `init` method that takes as its parameters two tuples, each containing player name and color of the piece that player is playing (ex: ('PlayerA', 'R'), ('PlayerB','R')) and it intializes the board with the pieces placed in the correct positions. The board positions start with (0,0) and end at (5,5). The top left corner position being (0,0) and bottom right corner position being (5,5). In (0,0) the first 0 represents row and second 0 represents column. Note, we are not considering the 1X4 extensions on each side. The pieces are marked as R and G for Red and Green respectively -- this is case insensitive.
-- A method named `move_piece` takes following parameters in order: the player name who is making the move, a tuple that represents the coordinate from where the move is being made, another tuple that represents the location to where the move is being made, an integer that represents the number of pieces that are being moved.
-  - It returns an error or proper message:
-    - if a player is trying to make a move out of turn, return 'not your turn'
-    - if the player provides invalid locations (source or destination), return 'invalid location'
-    - if the player is trying to move invalid number of pieces, return 'invalid number of pieces'
-   - It returns 'successfully moved' message if the move was successful
-   - If the move makes the player win, it returns `<player name> Wins` message (e.g. "PlayerB Wins")
-   - If the number of pieces at the moved location are more than 5 in number, then it automatically captures bottom pieces if they belong to other player and moves to current players reserve if the pieces belong to current player.
-- A method named `show_pieces` takes a position on the board and returns a list showing the pieces that are present at that location with the bottom-most pieces at the 0th index of the array and other pieces on it in the order. 
-- A method named `show_reserve` takes the player name as the parameter and shows the count of pieces that are in reserve for the player. If no pieces are in reserve, return 0.
-- A method named `show_captured` takes the player name as the parameter and shows the number of pieces captured by that player. If no pieces have been captured, return 0.
-- A method named `reserved_move` takes the player name and the location on the board as the parameters. It places the piece from the reserve to the location. It should reduce the reserve pieces of that player by one and make appropriate adjustments to pieces at the location. If there are no pieces in reserve, return 'no pieces in reserve'
-
-Case won't matter for all the messages that your methods return.
-
-Feel free to add whatever other classes, methods, or data members you want. All data members must be private. All methods must have no more than 20-25 lines of code - don't try to get around this by making really long or complicated lines of code. (The rule in real life is just to not stuff too much into a single function, but that's probably too nebulous a rule for you at this point, and if your function is over 25 lines, you probably are trying to stuff too much into it.)
-
-
-Here's a very simple example of how your `FocusGame` class could be used by the autograder or a TA:
+Here's a very simple example of how `FocusGame` class could be used:
 ```
 game = FocusGame(('PlayerA', 'R'), ('PlayerB','G'))
 game.move_piece('PlayerA',(0,0), (0,1), 1)  #Returns message "successfully moved"
@@ -55,5 +30,3 @@ game.show_captured('PlayerA') # Returns 0
 game.reserved_move('PlayerA', (0,0)) # Returns message "No pieces in reserve"
 game.show_reserve('PlayerA') # Returns 0
 ```
-
-The file must be named: **FocusGame.py**
