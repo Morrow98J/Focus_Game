@@ -1,5 +1,8 @@
 # portfolio-project
 
+Todo: implement GUI with Pygame, fix edge cases
+
+
 You can see the rules [here](https://en.wikipedia.org/wiki/Focus_(board_game)).
 
 
@@ -17,6 +20,7 @@ The pieces that were removed from the board will either be captured or put into 
 If a player has playing pieces in reserve they can make a reserve move instead of a single or multiple move. To make a reserve move take one of your playing pieces in reserve and place it on any space on the gameboard. The reserve piece can be placed on an empty space, on a space containing one piece, or a space containing multiple pieces. Placing the reserve piece counts as your turn as you don’t get to move the piece you just added to the gameboard.
 ###### End of the Game
 The first player who captures six pieces of the other player wins the game.
+
 
 This [YouTube link](https://www.youtube.com/watch?v=DVRVQM9lo9E) explains how to play the game
 
