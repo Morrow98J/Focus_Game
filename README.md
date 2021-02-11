@@ -1,7 +1,4 @@
-# Spring_Portfolio_Project
-
-
-Spring 2020 OSU Portfolio Project
+# Spring 2020 Portfolio Project
 
 
 Todo: implement GUI with Pygame, fix edge cases
